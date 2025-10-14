@@ -2,6 +2,7 @@ package com.userservice.controllers;
 
 import com.userservice.dtos.RegisterUserRequestDTO;
 import com.userservice.dtos.RegisterUserResponseDTO;
+import com.userservice.dtos.UserRequestDTO;
 import com.userservice.dtos.UserResponseDTO;
 import com.userservice.services.UserServices;
 import jakarta.validation.Valid;
@@ -43,6 +44,24 @@ public class UserController {
                 .body(
                         userServices.getRegisteredUserById( userId )
                 ) ;
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRegisteredUserById( @PathVariable(name = "id") String userId ){
+
+        userServices.deleteRegisteredUserById( userId ) ;
+
+        return ResponseEntity.status(HttpStatus.OK).build() ;
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> updateRegisteredUserById(@Valid @RequestBody UserRequestDTO updatedUser , @PathVariable( name = "id") String userId ){
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                userServices.updateRegisteredUserById( userId , updatedUser )
+        ) ;
+
+
     }
 
 

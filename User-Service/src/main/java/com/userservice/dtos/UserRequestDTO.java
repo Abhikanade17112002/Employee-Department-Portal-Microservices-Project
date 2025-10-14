@@ -1,5 +1,8 @@
 package com.userservice.dtos;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.*;
 
 @AllArgsConstructor
@@ -7,9 +10,8 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class RegisterUserResponseDTO {
+public class UserRequestDTO {
 
-    private String userId  ;
 
     private String firstName;
 
@@ -18,5 +20,4 @@ public class RegisterUserResponseDTO {
     private String email;
 
     private int age ;
-
 }

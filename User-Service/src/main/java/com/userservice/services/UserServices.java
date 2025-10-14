@@ -2,15 +2,16 @@ package com.userservice.services;
 
 import com.userservice.dtos.RegisterUserRequestDTO;
 import com.userservice.dtos.RegisterUserResponseDTO;
+import com.userservice.dtos.UserRequestDTO;
 import com.userservice.dtos.UserResponseDTO;
 import com.userservice.entities.User;
 import com.userservice.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.UUID;
+
 
 
 @Service
@@ -35,6 +36,8 @@ public class UserServices {
         registerUserResponseDTO.setFirstName(registeredUser.getFirstName());
         registerUserResponseDTO.setLastName(registeredUser.getLastName());
         registerUserResponseDTO.setUserId(registeredUser.getUserId());
+        registerUserResponseDTO.setAge(registeredUser.getAge());
+
 
         return registerUserResponseDTO;
     }
@@ -52,6 +55,7 @@ public class UserServices {
                     registerUserResponseDTO.setFirstName(registeredUser.getFirstName());
                     registerUserResponseDTO.setLastName(registeredUser.getLastName());
                     registerUserResponseDTO.setUserId(registeredUser.getUserId());
+                    registerUserResponseDTO.setAge(registeredUser.getAge());
 
                     return registerUserResponseDTO;
 
@@ -72,7 +76,42 @@ public class UserServices {
         response.setFirstName(retrivedUser.getFirstName());
         response.setLastName(retrivedUser.getLastName());
         response.setUserId(retrivedUser.getUserId());
+        response.setAge(retrivedUser.getAge());
 
         return response ;
+    }
+
+    public void deleteRegisteredUserById(String userId) {
+
+        if( !userRepository.existsById(userId) ){
+            throw  new EntityNotFoundException("User With User Id ==> " + userId + " Not Found To Delete ") ;
+        }
+
+        userRepository.deleteById(userId);
+        return ;
+    }
+
+    public UserResponseDTO updateRegisteredUserById(String userId, @Valid UserRequestDTO updatedUser) {
+
+        User retrivedUser = userRepository.findById(userId).orElseThrow( ()->  new EntityNotFoundException("User With User Id ==> " + userId + " Not Found To Update ")) ;
+
+        retrivedUser.setFirstName(updatedUser.getFirstName() != null ? updatedUser.getFirstName() : retrivedUser.getFirstName());
+        retrivedUser.setLastName( updatedUser.getLastName() != null ? updatedUser.getLastName() : retrivedUser.getLastName() );
+        retrivedUser.setEmail( updatedUser.getEmail() != null ? updatedUser.getEmail() : retrivedUser.getEmail());
+        retrivedUser.setAge( updatedUser.getAge() != 0 ? updatedUser.getAge() : retrivedUser.getAge());
+
+        User user = userRepository.save(retrivedUser) ;
+
+
+        UserResponseDTO response = new UserResponseDTO() ;
+
+        response.setEmail(user.getEmail());
+        response.setFirstName(user.getFirstName());
+        response.setLastName(user.getLastName());
+        response.setUserId(user.getUserId());
+        response.setAge(user.getAge());
+
+        return response ;
+
     }
 }
