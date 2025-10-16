@@ -123,6 +123,8 @@ public class UserServices {
                 ()-> new EntityNotFoundException("User with user Id ==> " + userId + " Not Found ")
         ) ;
 
+        System.out.println("Department Id ==> " + retrivedUser.getDepartmentId());
+
         Department retrivedDepartment = departmentClient.getDepartmentById(retrivedUser.getDepartmentId()) ;
 
         UserDepartmentResponseDTO response = new UserDepartmentResponseDTO() ;
