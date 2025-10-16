@@ -27,5 +27,8 @@ public class User {
 
     @Column( nullable = false )
     private int age;
+
+    @Column( nullable = true )
+    private String departmentId ;
 }
 

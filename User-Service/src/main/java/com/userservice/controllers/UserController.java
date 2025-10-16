@@ -1,9 +1,7 @@
 package com.userservice.controllers;
 
-import com.userservice.dtos.RegisterUserRequestDTO;
-import com.userservice.dtos.RegisterUserResponseDTO;
-import com.userservice.dtos.UserRequestDTO;
-import com.userservice.dtos.UserResponseDTO;
+import com.userservice.dtos.*;
+import com.userservice.feingclients.DepartmentClient;
 import com.userservice.services.UserServices;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,14 +53,22 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> updateRegisteredUserById(@Valid @RequestBody UserRequestDTO updatedUser , @PathVariable( name = "id") String userId ){
+    public ResponseEntity<UserResponseDTO> updateRegisteredUserById(@Valid @RequestBody UpdateUserRequestDTO updatedUser , @PathVariable( name = "id") String userId ){
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 userServices.updateRegisteredUserById( userId , updatedUser )
         ) ;
-
-
+        
     }
+
+    @GetMapping("/{id}/withdepartment")
+    public ResponseEntity<UserDepartmentResponseDTO> getRegisterUserByIdAndDepartment(@PathVariable( name = "id") String userId ){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(
+                        userServices.getRegisterUserByIdAndDepartment( userId )
+                ) ;
+    }
+
 
 
 }
