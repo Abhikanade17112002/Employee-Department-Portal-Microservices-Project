@@ -3,6 +3,8 @@ package com.userservice.controllers;
 import com.userservice.dtos.*;
 import com.userservice.feingclients.DepartmentClient;
 import com.userservice.services.UserServices;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,12 +63,28 @@ public class UserController {
         
     }
 
+    int retryCount = 1 ;
+
     @GetMapping("/{id}/withdepartment")
+    @Retry(name = "FetchRegisteredUserByIdWithDepartment" , fallbackMethod = "fetchRegisteredUserByIdWithDepartmentFallback")
+    @CircuitBreaker(name = "FetchRegisteredUserByIdWithDepartment" , fallbackMethod = "fetchRegisteredUserByIdWithDepartmentFallback")
     public ResponseEntity<UserDepartmentResponseDTO> getRegisterUserByIdAndDepartment(@PathVariable( name = "id") String userId ){
+        System.out.println("RETRY COUNT ==> " + retryCount++);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(
                         userServices.getRegisterUserByIdAndDepartment( userId )
                 ) ;
+    }
+
+
+
+    public ResponseEntity<UserDepartmentResponseDTO> fetchRegisteredUserByIdWithDepartmentFallback( String userId , Exception e){
+        System.out.println("fetchRegisteredUserByIdWithDepartmentFallback Called ==> " + e.getMessage());
+        UserDepartmentResponseDTO dummyResponse = new UserDepartmentResponseDTO() ;
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                dummyResponse
+        ) ;
     }
 
 

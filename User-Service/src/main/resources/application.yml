@@ -1,3 +1,42 @@
 spring:
   config:
-    import: configserver:http://localhost:8085
+    import: "optional:configserver:http://localhost:8085"
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      FetchRegisteredUserByIdWithDepartment:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        eventConsumerBufferSize: 10
+        slidingWindowType: COUNT_BASED
+
+  retry:
+    instances:
+      FetchRegisteredUserByIdWithDepartment:
+        maxRetryAttempts: 3
+        waitDuration: 2s
+
+  ratelimiter:
+    instances:
+      FetchRegisteredUserByIdWithDepartment:
+        limitForPeriod: 5       # max 5 calls per refresh period
+        limitRefreshPeriod: 10s # time window for rate limiting
+        timeoutDuration: 1s     # max wait time to acquire a permission
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,loggers
+  endpoint:
+    health:
+      show-details: always
